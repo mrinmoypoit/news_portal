@@ -1,0 +1,51 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Alice Rahman",
+      "email": "alice@example.com",
+      "password": "alice1234"
+    },
+    {
+      "id": 2,
+      "name": "Karim Hossain",
+      "email": "karim@example.com",
+      "password": "karim1234"
+    },
+    {
+      "id": 3,
+      "name": "Nusrat Jahan",
+      "email": "nusrat@example.com",
+      "password": "nusrat1234"
+    },
+    {
+      "id": 4,
+      "name": "Mrinmoy Poit",
+      "email": "mrinmoy@gmail.com",
+      "password": "poit1234"
+    }
+  ],
+  "news": [
+    {
+      "id": 2,
+      "title": "Local Startup Wins Innovation Award",
+      "body": "A Dhaka-based startup has won an international innovation award for AI-driven solutions...",
+      "author_id": 2,
+      "comments": []
+    },
+    {
+      "title": "How Mrinmoy destroy IIT,DU",
+      "body": "Mrinmoy threw a nuclear bomb targeting the teacher lounge. Demolishing 1st floor of IIT. ",
+      "author_id": 4,
+      "comments": [
+        {
+          "id": 1765369073311,
+          "text": "yahoo",
+          "user_id": 4,
+          "timestamp": "2025-12-10T12:17:53.311Z"
+        }
+      ],
+      "id": 3
+    }
+  ]
+}
