@@ -10,32 +10,53 @@ export default function EditNews() {
   const user = JSON.parse(localStorage.getItem('currentUser'));
 
   useEffect(() => {
-    // 1. Get current news data
-    fetch(`http://localhost:3000/news/${id}`)
+    // Get current news data
+    fetch(`http://localhost:5000/api/news/${id}`)
       .then(res => res.json())
-      .then(data => {
-        // Security Check: Ensure the logged-in user is the actual author
-        if (data.author_id !== user.id) {
-          alert("Unauthorized access");
-          navigate('/');
-        } else {
-          setNews({ title: data.title, body: data.body });
-          setLoading(false);
+      .then(result => {
+        if (result.success) {
+          const data = result.data;
+          // Security Check: Ensure the logged-in user is the actual author
+          if (data.authorId !== user.id) {
+            alert("Unauthorized access");
+            navigate('/');
+          } else {
+            setNews({ title: data.title, body: data.body });
+            setLoading(false);
+          }
         }
+      })
+      .catch(err => {
+        console.error('Error fetching news:', err);
+        navigate('/');
       });
   }, [id, navigate, user.id]);
 
   const handleUpdate = (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
 
-    // 2. Perform Update via PATCH
-    fetch(`http://localhost:3000/news/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+    // Perform Update via PUT
+    fetch(`http://localhost:5000/api/news/${id}`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(news)
-    }).then(() => {
-      alert("Post updated successfully!");
-      navigate(`/news/${id}`);
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert("Post updated successfully!");
+        navigate(`/news/${id}`);
+      } else {
+        alert(data.message || "Failed to update post");
+      }
+    })
+    .catch(err => {
+      console.error('Error updating:', err);
+      alert("Error updating post");
     });
   };
 

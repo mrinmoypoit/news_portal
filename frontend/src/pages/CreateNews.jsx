@@ -18,24 +18,30 @@ export default function CreateNews() {
 
     const newPost = {
       title,
-      body,
-      author_id: user.id, // Mandatory author association
-      comments: []        // Nested structure initialization
+      body
     };
 
     try {
-      const response = await fetch('http://localhost:3000/news', {
-        method: 'POST', // Create method as per your map
-        headers: { 'Content-Type': 'application/json' },
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/news', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(newPost)
       });
 
-      if (response.ok) {
+      const data = await response.json();
+      if (data.success) {
         alert("News successfully published!");
-        navigate('/'); // Redirect to news feed
+        navigate('/');
+      } else {
+        alert(data.message || "Failed to publish news");
       }
     } catch (error) {
       console.error("Error posting news:", error);
+      alert("Error posting news. Please try again.");
     } finally {
       setLoading(false);
     }

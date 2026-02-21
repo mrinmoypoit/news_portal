@@ -9,10 +9,14 @@ export default function NewsFeed() {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
     const fetchNews = () => {
-        fetch('http://localhost:3000/news')
+        fetch('http://localhost:5000/api/news')
             .then(res => res.json())
             .then(data => {
-                setNews(data);
+                setNews(data.data.news || []);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Error fetching news:', err);
                 setLoading(false);
             });
     };
@@ -23,12 +27,15 @@ export default function NewsFeed() {
 
     const handleDelete = (id) => {
         if (window.confirm("Are you sure you want to delete this news post?")) {
-            fetch(`http://localhost:3000/news/${id}`, {
-                method: 'DELETE', // Delete method as per map
+            const token = localStorage.getItem('token');
+            fetch(`http://localhost:5000/api/news/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             }).then(() => {
-                // Update local state after successful deletion
                 setNews(news.filter(item => item.id !== id));
-            });
+            }).catch(err => console.error('Error deleting news:', err));
         }
     };
 
@@ -64,8 +71,8 @@ export default function NewsFeed() {
 
                             <div className="mt-6 flex items-center justify-between border-t pt-4 border-gray-50">
                                 <div className="flex gap-4 text-sm text-gray-400 font-medium">
-                                    <span>💬 {item.comments?.length || 0} comments</span>
-                                    <span>👤 Author ID: {item.author_id}</span>
+                                    <span>💬 {item._count?.comments || 0} comments</span>
+                                    <span>👤 {item.author?.name || 'Unknown'}</span>
                                 </div>
 
                                 <div className="flex gap-2">
@@ -73,7 +80,7 @@ export default function NewsFeed() {
                                         Read More →
                                     </Link>
 
-                                    {currentUser && currentUser.id === item.author_id && (
+                                    {currentUser && currentUser.id === item.authorId && (
                                         <div className="flex gap-2">
                                             <Link
                                                 to={`/edit/${item.id}`}

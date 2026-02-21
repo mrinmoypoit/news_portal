@@ -31,7 +31,14 @@
       "title": "Local Startup Wins Innovation Award",
       "body": "A Dhaka-based startup has won an international innovation award for AI-driven solutions...",
       "author_id": 2,
-      "comments": []
+      "comments": [
+        {
+          "id": 1771683635758,
+          "text": "Tate amar baal ta chira gelo",
+          "user_id": 4,
+          "timestamp": "2026-02-21T14:20:35.758Z"
+        }
+      ]
     },
     {
       "title": "How Mrinmoy destroy IIT,DU",
@@ -46,6 +53,20 @@
         }
       ],
       "id": 3
+    },
+    {
+      "title": "How to not become a faculty??",
+      "body": "Just become a good person in life. ",
+      "author_id": 4,
+      "comments": [],
+      "id": 4
+    },
+    {
+      "title": "How to become a billionaire???",
+      "body": "Number 1. Don't admit into IIT ",
+      "author_id": 4,
+      "comments": [],
+      "id": 5
     }
   ]
 }

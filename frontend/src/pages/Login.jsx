@@ -6,16 +6,25 @@ export default function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Querying the API for matching email and password
-    fetch(`http://localhost:3000/users?email=${email}&password=${password}`)
+    // Call the new backend API
+    fetch(`http://localhost:5000/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    })
       .then(res => res.json())
-      .then(users => {
-        if (users.length > 0) {
-          localStorage.setItem('currentUser', JSON.stringify(users[0]));
+      .then(data => {
+        if (data.success && data.data.user) {
+          localStorage.setItem('currentUser', JSON.stringify(data.data.user));
+          localStorage.setItem('token', data.data.token);
           window.location.href = '/'; 
         } else {
-          alert("Invalid email or password");
+          alert(data.message || "Invalid email or password");
         }
+      })
+      .catch(err => {
+        console.error('Login error:', err);
+        alert("Login failed. Please try again.");
       });
   };
 

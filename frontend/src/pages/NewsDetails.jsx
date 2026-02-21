@@ -8,31 +8,45 @@ export default function NewsDetail() {
   const user = JSON.parse(localStorage.getItem('currentUser'));
 
   useEffect(() => {
-    fetch(`http://localhost:3000/news/${id}`).then(res => res.json()).then(setArticle);
+    fetch(`http://localhost:5000/api/news/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setArticle(data.data);
+        }
+      })
+      .catch(err => console.error('Error fetching news:', err));
   }, [id]);
 
   const postComment = (e) => {
     e.preventDefault();
     if (!user) return alert("Please login to comment");
 
-    const commentData = {
-      id: Date.now(),
-      text: newComment,
-      user_id: user.id,
-      timestamp: new Date().toISOString()
-    };
-
-    const updatedComments = [...article.comments, commentData];
-
-    // PATCH to update the nested comments list as per your Route Map
-    fetch(`http://localhost:3000/news/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ comments: updatedComments })
-    }).then(() => {
-      setArticle({ ...article, comments: updatedComments });
-      setNewComment("");
-    });
+    const token = localStorage.getItem('token');
+    
+    fetch(`http://localhost:5000/api/comments/news/${id}`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ text: newComment })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        // Refresh the article to get updated comments
+        fetch(`http://localhost:5000/api/news/${id}`)
+          .then(res => res.json())
+          .then(result => {
+            if (result.success) {
+              setArticle(result.data);
+              setNewComment("");
+            }
+          });
+      }
+    })
+    .catch(err => console.error('Error posting comment:', err));
   };
 
   if (!article) return <p className="text-center mt-10">Loading article...</p>;
@@ -43,16 +57,16 @@ export default function NewsDetail() {
       <p className="text-gray-700 leading-relaxed mb-10">{article.body}</p>
 
       <div className="border-t pt-8">
-        <h3 className="text-xl font-bold mb-4">Comments ({article.comments.length})</h3>
+        <h3 className="text-xl font-bold mb-4">Comments ({article.comments?.length || 0})</h3>
         <form onSubmit={postComment} className="mb-6 flex gap-2">
           <input value={newComment} onChange={(e) => setNewComment(e.target.value)} 
-                 placeholder="Write a comment..." className="flex-1 border p-2 rounded" />
+                 placeholder="Write a comment..." className="flex-1 border p-2 rounded" required />
           <button type="submit" className="bg-gray-800 text-white px-4 rounded">Post</button>
         </form>
         <div className="space-y-4">
-          {article.comments.map(c => (
+          {article.comments?.map(c => (
             <div key={c.id} className="p-4 bg-white border rounded shadow-sm text-sm">
-              <span className="font-bold text-blue-600 block">User ID: {c.user_id}</span>
+              <span className="font-bold text-blue-600 block">{c.user?.name || 'User'}</span>
               <p>{c.text}</p>
             </div>
           ))}
